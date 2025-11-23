@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
-using LinkManager.Web.Data;
-using LinkManager.Web.Services;
+using LinkManager.Web.DAL;
+using LinkManager.Web.BLL;
 
 var builder = WebApplication.CreateBuilder(args);
 

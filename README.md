@@ -1,140 +1,90 @@
-# Link Manager - Gerenciador de Links com Health Checker
+# 🔗 Link Manager - Gerenciador de Links com Health Checker
 
-Aplicação web desenvolvida em Blazor Server (.NET 8) com SQL Server para gerenciar links e verificar sua disponibilidade.
+<div align="center">
 
-## 📋 Índice
+![.NET](https://img.shields.io/badge/.NET-8.0-512BD4?style=for-the-badge&logo=dotnet)
+![Blazor](https://img.shields.io/badge/Blazor-Server-512BD4?style=for-the-badge&logo=blazor)
+![SQL Server](https://img.shields.io/badge/SQL%20Server-2019+-CC2927?style=for-the-badge&logo=microsoft-sql-server)
+![Azure](https://img.shields.io/badge/Azure-Ready-0078D4?style=for-the-badge&logo=microsoft-azure)
+![Terraform](https://img.shields.io/badge/Terraform-IaC-7B42BC?style=for-the-badge&logo=terraform)
 
-- [Visão Geral](#visão-geral)
-- [Arquitetura](#arquitetura)
-- [Funcionalidades](#funcionalidades)
-- [Tecnologias](#tecnologias)
-- [Pré-requisitos](#pré-requisitos)
-- [Instalação Local](#instalação-local)
-- [Deploy na Azure](#deploy-na-azure)
-- [Estrutura do Projeto](#estrutura-do-projeto)
-- [Uso](#uso)
+Sistema web desenvolvido em **Blazor Server** e **C# .NET 8** para gerenciamento de links com verificação automática de saúde (health check) e extração de metadados HTML.
 
-## 🎯 Visão Geral
+[Início Rápido](QUICKSTART.md) • [Documentação](INDEX.md) • [Arquitetura](ARCHITECTURE.md) • [Deploy Azure](DEPLOYMENT.md)
 
-O Link Manager é uma aplicação web que permite:
-- Cadastrar e gerenciar links de páginas web
-- Verificar automaticamente a disponibilidade dos links (Health Check)
-- Extrair metadados HTML (título e descrição)
-- Monitorar status e tempo de resposta
-- Categorizar e organizar links
+</div>
+
+---
+
+## 📋 Funcionalidades
+
+- **CRUD Completo de Links**: Criar, listar, visualizar detalhes e excluir links
+- **Health Checker**: Verificação automática da disponibilidade dos links
+- **Extração de Metadados**: Captura automática de título e descrição das páginas
+- **Categorização**: Organização de links por categorias
+- **Dashboard**: Estatísticas em tempo real (total, online, offline, pendentes)
+- **Histórico**: Registro de todas as verificações com timestamps
+- **Interface Responsiva**: Design moderno com Bootstrap 5
 
 ## 🏗️ Arquitetura
 
-A aplicação segue o padrão **MVC (Model-View-Controller)** com camada **DAL (Data Access Layer)**:
+O projeto segue o padrão **MVC (Model-View-Controller)** com separação clara de responsabilidades:
 
 ```
-┌─────────────────────────────────────────────┐
-│              Blazor Server UI               │
-│         (Views - Razor Components)          │
-└────────────────┬────────────────────────────┘
-                 │
-┌────────────────▼────────────────────────────┐
-│            Services Layer                   │
-│  - HealthCheckerService                     │
-│  - Business Logic                           │
-└────────────────┬────────────────────────────┘
-                 │
-┌────────────────▼────────────────────────────┐
-│         Data Access Layer (DAL)             │
-│  - PageLinkRepository (Interface)           │
-│  - Entity Framework Core                    │
-└────────────────┬────────────────────────────┘
-                 │
-┌────────────────▼────────────────────────────┐
-│            SQL Server Database              │
-│  - PageLinks Table                          │
-└─────────────────────────────────────────────┘
+LinkManager.Web/
+├── Models/              # Entidades de domínio
+│   └── PageLink.cs     # Modelo de dados do link
+├── Data/               # Camada de Acesso a Dados (DAL)
+│   ├── ApplicationDbContext.cs      # Contexto do EF Core
+│   ├── IPageLinkRepository.cs       # Interface do repositório
+│   ├── PageLinkRepository.cs        # Implementação do repositório
+│   └── Migrations/                  # Migrations do banco
+├── Services/           # Camada de Serviços (Business Logic)
+│   ├── IHealthCheckerService.cs     # Interface do health checker
+│   └── HealthCheckerService.cs      # Implementação do health checker
+├── Pages/              # Views (Blazor Pages)
+│   ├── Index.razor                  # Página principal
+│   └── _Host.cshtml                 # Host HTML
+└── Shared/             # Componentes compartilhados
+    ├── MainLayout.razor             # Layout principal
+    └── NavMenu.razor                # Menu de navegação
 ```
 
-### Camadas
+### Camadas da Aplicação
 
-#### 1. **Models** (Entidades)
-- `PageLink.cs`: Modelo de dados do link
+1. **Model (Modelo)**: Define a estrutura de dados (`PageLink`)
+2. **DAL (Data Access Layer)**: Gerencia acesso ao banco via Entity Framework Core
+3. **Services (Serviços)**: Lógica de negócio (health check, extração de metadados)
+4. **View (Blazor Pages)**: Interface do usuário
 
-#### 2. **Data Access Layer (DAL)**
-- `ApplicationDbContext.cs`: Contexto do Entity Framework
-- `IPageLinkRepository.cs`: Interface do repositório
-- `PageLinkRepository.cs`: Implementação do repositório
+## 🛠️ Tecnologias Utilizadas
 
-#### 3. **Services** (Lógica de Negócio)
-- `IHealthCheckerService.cs`: Interface do serviço de health check
-- `HealthCheckerService.cs`: Implementação do health checker
-
-#### 4. **Views** (Blazor Components)
-- `Index.razor`: Página principal com CRUD e listagem
-
-## ✨ Funcionalidades
-
-### 1. CRUD de Links
-- ✅ **Create**: Adicionar novos links
-- ✅ **Read**: Listar e visualizar links
-- ✅ **Update**: Atualizar informações (via health check)
-- ✅ **Delete**: Remover links (soft delete)
-
-### 2. Health Checker
-- ✅ Verificação HTTP da disponibilidade do link
-- ✅ Medição de tempo de resposta
-- ✅ Extração de metadados HTML:
-  - Título da página (`<title>`)
-  - Descrição (`<meta name="description">`)
-  - Open Graph tags (fallback)
-- ✅ Detecção de status:
-  - Online (200-299)
-  - Offline (400-599)
-  - Timeout
-  - Error
-
-### 3. Dashboard
-- ✅ Estatísticas em tempo real
-- ✅ Filtros por status e categoria
-- ✅ Visualização detalhada de cada link
-
-## 🛠️ Tecnologias
-
-### Backend
-- **.NET 8**: Framework principal
-- **Blazor Server**: UI interativa
-- **Entity Framework Core 8**: ORM
-- **SQL Server**: Banco de dados
-
-### Frontend
-- **Blazor Components**: Componentes reativos
-- **Bootstrap 5**: Framework CSS
+- **.NET 8.0**: Framework principal
+- **Blazor Server**: Framework para UI interativa
+- **Entity Framework Core 8.0**: ORM para acesso ao banco de dados
+- **SQL Server**: Banco de dados relacional
+- **HtmlAgilityPack**: Parsing e extração de metadados HTML
+- **Bootstrap 5**: Framework CSS para interface responsiva
 - **Bootstrap Icons**: Ícones
-
-### Bibliotecas
-- **HtmlAgilityPack**: Parser HTML para extração de metadados
-- **HttpClient**: Requisições HTTP
 
 ## 📦 Pré-requisitos
 
-### Desenvolvimento Local
-- .NET 8 SDK
-- SQL Server (LocalDB, Express ou Full)
-- Visual Studio 2022 ou VS Code
-- Git
+- .NET 8.0 SDK ou superior
+- SQL Server 2019 ou superior (ou SQL Server LocalDB para desenvolvimento)
+- Visual Studio 2022 ou VS Code (opcional)
 
-### Deploy na Azure
-- Conta Azure ativa
-- Azure CLI instalado
-- Terraform instalado
+## 🚀 Como Executar Localmente
 
-## 🚀 Instalação Local
-
-### 1. Clone o Repositório
+### 1. Clone o repositório
 
 ```bash
+git clone <url-do-repositorio>
 cd poc-azure-service-with-sqlserver
 ```
 
-### 2. Configure a Connection String
+### 2. Configure a string de conexão
 
-Edite `appsettings.json`:
+Edite o arquivo `appsettings.json` ou `appsettings.Development.json`:
 
 ```json
 {
@@ -144,229 +94,120 @@ Edite `appsettings.json`:
 }
 ```
 
-### 3. Restaure Pacotes
+### 3. Aplique as migrations
 
 ```bash
 cd LinkManager.Web
-dotnet restore
-```
-
-### 4. Crie o Banco de Dados
-
-```bash
-dotnet ef migrations add InitialCreate
 dotnet ef database update
 ```
 
-### 5. Execute a Aplicação
+### 4. Execute a aplicação
 
 ```bash
 dotnet run
 ```
 
-Acesse: `https://localhost:5001`
+A aplicação estará disponível em `https://localhost:5001` ou `http://localhost:5000`.
 
-## ☁️ Deploy na Azure
+## 🗄️ Estrutura do Banco de Dados
 
-### Opção 1: Terraform (Recomendado)
-
-Veja documentação completa em: [TERRAFORM.md](TERRAFORM.md)
-
-```bash
-cd terraform
-terraform init
-terraform plan
-terraform apply
-```
-
-### Opção 2: Azure CLI
-
-```bash
-# Criar Resource Group
-az group create --name rg-linkmanager --location brazilsouth
-
-# Criar SQL Server
-az sql server create --name sql-linkmanager --resource-group rg-linkmanager --location brazilsouth --admin-user sqladmin --admin-password "SuaSenhaForte123!"
-
-# Criar Database
-az sql db create --resource-group rg-linkmanager --server sql-linkmanager --name LinkManagerDb --service-objective S0
-
-# Criar App Service Plan
-az appservice plan create --name plan-linkmanager --resource-group rg-linkmanager --sku B1 --is-linux
-
-# Criar Web App
-az webapp create --resource-group rg-linkmanager --plan plan-linkmanager --name app-linkmanager --runtime "DOTNET|8.0"
-
-# Deploy
-dotnet publish -c Release
-cd bin/Release/net8.0/publish
-zip -r deploy.zip .
-az webapp deployment source config-zip --resource-group rg-linkmanager --name app-linkmanager --src deploy.zip
-```
-
-## 📁 Estrutura do Projeto
-
-```
-poc-azure-service-with-sqlserver/
-├── LinkManager.sln                      # Solution
-├── LinkManager.Web/                     # Projeto principal
-│   ├── Data/                           # Data Access Layer
-│   │   ├── ApplicationDbContext.cs    # EF Context
-│   │   ├── IPageLinkRepository.cs     # Interface
-│   │   └── PageLinkRepository.cs      # Implementação
-│   ├── Models/                         # Entidades
-│   │   └── PageLink.cs                # Modelo de Link
-│   ├── Services/                       # Serviços
-│   │   ├── IHealthCheckerService.cs   # Interface
-│   │   └── HealthCheckerService.cs    # Implementação
-│   ├── Pages/                          # Blazor Pages
-│   │   ├── Index.razor                # Página principal
-│   │   └── _Host.cshtml               # Host page
-│   ├── Shared/                         # Componentes compartilhados
-│   │   ├── MainLayout.razor           # Layout principal
-│   │   └── NavMenu.razor              # Menu navegação
-│   ├── Program.cs                      # Configuração
-│   ├── appsettings.json               # Configurações
-│   └── LinkManager.Web.csproj         # Projeto
-├── terraform/                          # Infraestrutura
-│   ├── main.tf                        # Recursos principais
-│   ├── variables.tf                   # Variáveis
-│   ├── outputs.tf                     # Outputs
-│   └── terraform.tfvars.example       # Exemplo de variáveis
-├── README.md                           # Esta documentação
-├── ARCHITECTURE.md                     # Arquitetura detalhada
-└── TERRAFORM.md                        # Guia Terraform
-```
-
-## 💻 Uso
-
-### Adicionar um Link
-
-1. Acesse a página inicial
-2. Preencha o campo "URL" com o link completo
-3. (Opcional) Adicione categoria e notas
-4. Clique em "Adicionar Link"
-5. O sistema automaticamente:
-   - Verifica a disponibilidade
-   - Extrai título e descrição
-   - Salva no banco de dados
-
-### Verificar Saúde de um Link
-
-1. Na lista de links, clique no ícone ❤️ (Health Check)
-2. O sistema fará uma nova verificação
-3. Os dados serão atualizados automaticamente
-
-### Ver Detalhes
-
-1. Clique no ícone 👁️ (Ver Detalhes)
-2. Uma modal exibirá todas as informações do link
-
-### Excluir um Link
-
-1. Clique no ícone 🗑️ (Excluir)
-2. O link será marcado como inativo (soft delete)
-
-## 🔧 Configuração
-
-### Connection String
-
-Para SQL Server local:
-```json
-"Server=(localdb)\\mssqllocaldb;Database=LinkManagerDb;Trusted_Connection=True"
-```
-
-Para Azure SQL:
-```json
-"Server=tcp:seu-servidor.database.windows.net,1433;Database=LinkManagerDb;User ID=sqladmin;Password=SuaSenha;Encrypt=True;TrustServerCertificate=False"
-```
-
-### Timeouts
-
-Edite `HealthCheckerService.cs`:
-
-```csharp
-httpClient.Timeout = TimeSpan.FromSeconds(30); // Ajuste conforme necessário
-```
-
-## 📊 Banco de Dados
-
-### Tabela PageLinks
+### Tabela: PageLinks
 
 | Coluna | Tipo | Descrição |
 |--------|------|-----------|
-| Id | int | Chave primária |
-| Url | nvarchar(2000) | URL do link |
-| Title | nvarchar(500) | Título da página |
-| Description | nvarchar(1000) | Descrição |
-| Status | nvarchar(50) | Status atual |
-| HttpStatusCode | int | Código HTTP |
-| ResponseTimeMs | bigint | Tempo de resposta |
-| CreatedAt | datetime2 | Data de criação |
-| LastCheckedAt | datetime2 | Última verificação |
-| ErrorMessage | nvarchar(1000) | Mensagem de erro |
-| Category | nvarchar(100) | Categoria |
-| Notes | nvarchar(2000) | Notas |
-| IsActive | bit | Ativo/Inativo |
+| Id | int | Chave primária (auto-incremento) |
+| Url | nvarchar(2000) | URL do link (único) |
+| Title | nvarchar(500) | Título extraído do HTML |
+| Description | nvarchar(1000) | Descrição extraída dos meta tags |
+| Status | nvarchar(50) | Status atual (Online, Offline, Pending, etc) |
+| HttpStatusCode | int | Código HTTP da última verificação |
+| ResponseTimeMs | bigint | Tempo de resposta em milissegundos |
+| CreatedAt | datetime2 | Data de criação do registro |
+| LastCheckedAt | datetime2 | Data da última verificação |
+| ErrorMessage | nvarchar(1000) | Mensagem de erro (se houver) |
+| Category | nvarchar(100) | Categoria do link |
+| Notes | nvarchar(2000) | Notas adicionais |
+| IsActive | bit | Indica se o link está ativo |
 
 ### Índices
 
-- `IX_PageLinks_Url` (Unique)
-- `IX_PageLinks_Status`
-- `IX_PageLinks_CreatedAt`
-- `IX_PageLinks_Category`
+- `IX_PageLinks_Url`: Índice único na URL
+- `IX_PageLinks_Status`: Índice no status para filtros rápidos
+- `IX_PageLinks_CreatedAt`: Índice na data de criação
+- `IX_PageLinks_Category`: Índice na categoria
+
+## 🔍 Health Checker
+
+O serviço de Health Checker realiza as seguintes operações:
+
+1. **Requisição HTTP**: Faz uma requisição GET para a URL
+2. **Medição de Performance**: Registra o tempo de resposta
+3. **Extração de Metadados**:
+   - Título: Extrai do tag `<title>` ou `<meta property="og:title">`
+   - Descrição: Extrai de `<meta name="description">` ou `<meta property="og:description">`
+4. **Determinação de Status**:
+   - `Online`: HTTP 2xx
+   - `Offline`: HTTP 4xx/5xx ou erro de rede
+   - `Timeout`: Requisição excedeu 30 segundos
+   - `Error`: Outros erros
+   - `Pending`: Ainda não verificado
+
+## 📊 API do Repositório
+
+### IPageLinkRepository
+
+```csharp
+Task<List<PageLink>> GetAllAsync()
+Task<PageLink?> GetByIdAsync(int id)
+Task<PageLink?> GetByUrlAsync(string url)
+Task<PageLink> AddAsync(PageLink pageLink)
+Task<PageLink> UpdateAsync(PageLink pageLink)
+Task DeleteAsync(int id)
+Task<List<PageLink>> GetByCategoryAsync(string category)
+Task<List<PageLink>> GetByStatusAsync(string status)
+Task<List<PageLink>> GetLinksNeedingCheckAsync(int hoursThreshold = 24)
+```
+
+## 🌐 Deploy na Azure
+
+Consulte o arquivo [DEPLOYMENT.md](DEPLOYMENT.md) para instruções detalhadas sobre como fazer deploy na Azure usando Terraform.
+
+### Recursos Azure Criados
+
+- **App Service**: Hospedagem da aplicação web
+- **SQL Database**: Banco de dados gerenciado
+- **Application Insights**: Monitoramento e telemetria
+- **Key Vault**: Gerenciamento seguro de secrets
+
+## 📝 Variáveis de Ambiente
+
+Para produção, configure as seguintes variáveis:
+
+```bash
+ConnectionStrings__DefaultConnection=<connection-string-sql-server>
+ASPNETCORE_ENVIRONMENT=Production
+```
 
 ## 🧪 Testes
 
-### Testar Health Checker
+Para executar testes (quando implementados):
 
 ```bash
-curl -X GET https://localhost:5001/
+dotnet test
 ```
 
-### Testar Banco de Dados
+## 📄 Licença
 
-```sql
-SELECT * FROM PageLinks WHERE IsActive = 1;
-```
+Este projeto é um POC (Proof of Concept) para fins educacionais.
 
-## 🐛 Troubleshooting
+## 👥 Contribuindo
 
-### Erro de Conexão com Banco
+1. Fork o projeto
+2. Crie uma branch para sua feature (`git checkout -b feature/AmazingFeature`)
+3. Commit suas mudanças (`git commit -m 'Add some AmazingFeature'`)
+4. Push para a branch (`git push origin feature/AmazingFeature`)
+5. Abra um Pull Request
 
-**Problema**: Cannot connect to SQL Server
-
-**Solução**:
-1. Verifique se SQL Server está rodando
-2. Confirme a connection string
-3. Teste conexão: `sqlcmd -S (localdb)\mssqllocaldb -Q "SELECT @@VERSION"`
-
-### Erro ao Extrair Metadados
-
-**Problema**: Título/Descrição não são extraídos
-
-**Solução**:
-- Alguns sites bloqueiam scraping
-- Verifique se o site tem os meta tags
-- Aumente o timeout
-
-### Timeout em Links
-
-**Problema**: Muitos timeouts
-
-**Solução**:
-- Aumente o timeout em `HealthCheckerService.cs`
-- Verifique conectividade de rede
-- Alguns sites podem estar bloqueando
-
-## 📝 Licença
-
-Este projeto é fornecido como exemplo educacional.
-
-## 🤝 Contribuindo
-
-Veja [CONTRIBUTING.md](CONTRIBUTING.md) para detalhes.
-
-## 📧 Suporte
+## 📞 Suporte
 
 Para questões e suporte, abra uma issue no repositório.

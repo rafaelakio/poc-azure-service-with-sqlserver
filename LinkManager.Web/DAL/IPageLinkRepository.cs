@@ -1,6 +1,6 @@
 using LinkManager.Web.Models;
 
-namespace LinkManager.Web.Data;
+namespace LinkManager.Web.DAL;
 
 /// <summary>
 /// Interface do repositório para operações de dados de PageLink.

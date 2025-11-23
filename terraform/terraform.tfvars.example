@@ -1,0 +1,75 @@
+# Exemplo de arquivo terraform.tfvars
+# Copie este arquivo para terraform.tfvars e ajuste os valores
+
+# Geral
+resource_group_name = "rg-linkmanager-prod"
+location            = "brazilsouth"  # ou "eastus", "westeurope", etc
+environment         = "Production"
+
+# SQL Server
+# IMPORTANTE: Nomes devem ser globalmente únicos na Azure
+sql_server_name      = "sql-linkmanager-unique123"  # Mude para um nome único
+sql_admin_username   = "sqladmin"
+sql_admin_password   = "SuaSenhaSegura123!"  # MUDE PARA UMA SENHA FORTE
+sql_database_name    = "LinkManagerDb"
+sql_database_sku     = "S0"  # Basic, S0, S1, P1, etc
+sql_database_max_size_gb = 2
+
+# Azure AD Admin (opcional)
+# azuread_admin_login     = "admin@seudominio.com"
+# azuread_admin_object_id = "00000000-0000-0000-0000-000000000000"
+
+# Firewall SQL Server
+# Adicione seu IP para acesso direto ao banco (opcional)
+# allow_my_ip = "203.0.113.0"  # Seu IP público
+
+# App Service
+app_service_plan_name = "plan-linkmanager-prod"
+app_service_plan_sku  = "B1"  # B1, B2, S1, S2, P1V2, P2V2, etc
+app_service_name      = "app-linkmanager-unique123"  # Mude para um nome único
+app_service_always_on = true
+
+# Staging Slot (opcional)
+enable_staging_slot = false  # true para habilitar slot de staging
+
+# Application Insights
+app_insights_name            = "appi-linkmanager-prod"
+log_analytics_workspace_name = "log-linkmanager-prod"
+
+# Tags
+tags = {
+  Project     = "Link Manager"
+  Environment = "Production"
+  ManagedBy   = "Terraform"
+  Owner       = "Seu Nome"
+  CostCenter  = "TI"
+}
+
+# ============================================
+# NOTAS IMPORTANTES:
+# ============================================
+# 
+# 1. NOMES ÚNICOS:
+#    - sql_server_name deve ser globalmente único
+#    - app_service_name deve ser globalmente único
+#    - Adicione sufixos únicos (ex: empresa-ambiente-random)
+#
+# 2. SENHA SQL:
+#    - Mínimo 8 caracteres
+#    - Deve conter: maiúsculas, minúsculas, números e símbolos
+#    - NÃO commite este arquivo com senhas reais
+#
+# 3. CUSTOS:
+#    - B1 App Service: ~$13/mês
+#    - S0 SQL Database: ~$15/mês
+#    - Total estimado: ~$30/mês
+#
+# 4. AMBIENTES:
+#    Para criar múltiplos ambientes (dev, staging, prod),
+#    crie arquivos separados: dev.tfvars, staging.tfvars, prod.tfvars
+#    e use: terraform apply -var-file="dev.tfvars"
+#
+# 5. SEGURANÇA:
+#    - Adicione terraform.tfvars ao .gitignore
+#    - Use Azure Key Vault para secrets em produção
+#    - Habilite Azure AD authentication quando possível

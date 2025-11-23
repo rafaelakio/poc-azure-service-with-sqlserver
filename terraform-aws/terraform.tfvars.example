@@ -1,0 +1,88 @@
+# Example terraform.tfvars for AWS deployment
+# Copy this file to terraform.tfvars and adjust the values
+
+# General
+project_name = "linkmanager"
+environment  = "Production"
+aws_region   = "us-east-1" # or sa-east-1 for São Paulo
+
+# VPC and Networking
+vpc_cidr              = "10.0.0.0/16"
+public_subnet_1_cidr  = "10.0.1.0/24"
+public_subnet_2_cidr  = "10.0.2.0/24"
+private_subnet_1_cidr = "10.0.10.0/24"
+private_subnet_2_cidr = "10.0.11.0/24"
+
+# RDS SQL Server
+rds_instance_class      = "db.t3.small"  # ~$50/month
+rds_allocated_storage   = 20             # GB
+sqlserver_engine_version = "15.00.4335.1.v1" # SQL Server 2019 Express
+database_name           = "LinkManagerDb"
+db_username             = "sqladmin"
+db_password             = "YourSecurePassword123!" # CHANGE THIS!
+backup_retention_period = 7
+skip_final_snapshot     = false # Set to true for dev/test
+
+# ECS Fargate
+ecs_task_cpu       = "256"  # 0.25 vCPU
+ecs_task_memory    = "512"  # 0.5 GB
+ecs_desired_count  = 1      # Number of tasks
+
+# CloudWatch
+log_retention_days = 7
+
+# Load Balancer
+enable_deletion_protection = false # Set to true for production
+
+# Tags
+tags = {
+  Project     = "Link Manager"
+  Environment = "Production"
+  ManagedBy   = "Terraform"
+  Owner       = "Your Name"
+  CostCenter  = "IT"
+}
+
+# ============================================
+# IMPORTANT NOTES:
+# ============================================
+#
+# 1. DATABASE PASSWORD:
+#    - Must be at least 8 characters
+#    - Must contain uppercase, lowercase, numbers
+#    - DO NOT commit this file with real passwords
+#
+# 2. COSTS (Monthly Estimates):
+#    - RDS db.t3.small: ~$50
+#    - ECS Fargate (1 task, 0.25 vCPU, 0.5 GB): ~$15
+#    - ALB: ~$20
+#    - Data Transfer: ~$5-10
+#    - CloudWatch Logs: ~$1-5
+#    - Total: ~$90-100/month
+#
+# 3. COST OPTIMIZATION:
+#    For dev/test, use:
+#    - rds_instance_class = "db.t3.micro" (~$25/month)
+#    - ecs_task_cpu = "256"
+#    - ecs_task_memory = "512"
+#    - backup_retention_period = 1
+#    - skip_final_snapshot = true
+#
+# 4. REGIONS:
+#    - us-east-1 (N. Virginia) - Usually cheapest
+#    - sa-east-1 (São Paulo) - For Brazil
+#    - us-west-2 (Oregon) - Alternative
+#
+# 5. SECURITY:
+#    - Add terraform.tfvars to .gitignore
+#    - Use AWS Secrets Manager for production
+#    - Enable deletion protection for production
+#
+# 6. MULTI-ENVIRONMENT:
+#    Create separate files:
+#    - dev.tfvars
+#    - staging.tfvars
+#    - prod.tfvars
+#    
+#    Deploy with:
+#    terraform apply -var-file="dev.tfvars"

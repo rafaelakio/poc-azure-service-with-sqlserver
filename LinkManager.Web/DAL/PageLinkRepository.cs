@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using LinkManager.Web.Models;
 
-namespace LinkManager.Web.Data;
+namespace LinkManager.Web.DAL;
 
 /// <summary>
 /// Implementação do repositório para operações de dados de PageLink.

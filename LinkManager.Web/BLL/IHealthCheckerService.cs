@@ -1,6 +1,6 @@
 using LinkManager.Web.Models;
 
-namespace LinkManager.Web.Services;
+namespace LinkManager.Web.BLL;
 
 /// <summary>
 /// Interface para o serviço de verificação de saúde de links.

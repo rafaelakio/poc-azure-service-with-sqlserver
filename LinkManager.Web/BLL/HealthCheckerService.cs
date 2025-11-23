@@ -2,7 +2,7 @@ using System.Diagnostics;
 using HtmlAgilityPack;
 using LinkManager.Web.Models;
 
-namespace LinkManager.Web.Services;
+namespace LinkManager.Web.BLL;
 
 /// <summary>
 /// Serviço responsável por verificar a saúde de links e extrair metadados HTML.

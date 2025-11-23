@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using LinkManager.Web.Models;
 
-namespace LinkManager.Web.Data;
+namespace LinkManager.Web.DAL;
 
 /// <summary>
 /// Contexto do banco de dados da aplicação.
