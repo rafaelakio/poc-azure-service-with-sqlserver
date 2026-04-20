@@ -1,11 +1,11 @@
 using System;
-using LinkManager.Web.Data;
+using LinkManager.Web.DAL;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 
 #nullable disable
 
-namespace LinkManager.Web.Data.Migrations
+namespace LinkManager.Web.DAL.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
     partial class ApplicationDbContextModelSnapshot : ModelSnapshot

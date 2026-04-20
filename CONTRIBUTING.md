@@ -465,3 +465,21 @@ Obrigado por contribuir com o Link Manager! Sua ajuda é muito apreciada.
 ---
 
 **Dúvidas?** Abra uma issue ou discussion no GitHub!
+
+## 🛡️ Branch Protection
+
+Para garantir a qualidade do código, o branch `main` deve ter proteção configurada. No GitHub, acesse **Settings → Branches → Add rule** para `main` e habilite:
+
+- **Require pull request reviews before merging**: pelo menos 1 approver.
+- **Require status checks to pass before merging**: exigir que o workflow CI passe.
+- **Require branches to be up to date before merging**: garantir que a branch esteja atualizada antes do merge.
+- **Include administrators**: aplicar regras também a administradores.
+
+## 🧑‍💻 Processo de Code Review
+
+- Todo PR deve ter **pelo menos 1 aprovação** antes do merge.
+- Revisores devem verificar:
+  - Aderência aos padrões de código (style guide e Conventional Commits).
+  - Cobertura de testes para novas funcionalidades e correções.
+  - Documentação atualizada quando aplicável.
+- Comentários de revisão devem ser resolvidos antes do merge.
