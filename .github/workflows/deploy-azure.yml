@@ -72,7 +72,7 @@ jobs:
     
     - name: Deploy to Azure Web App
       id: deploy-to-webapp
-      uses: azure/webapps-deploy@v2
+      uses: azure/webapps-deploy@v3
       with:
         app-name: ${{ secrets.AZURE_WEBAPP_NAME }}
         package: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
@@ -100,7 +100,7 @@ jobs:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
     
     - name: Deploy to Staging Slot
-      uses: azure/webapps-deploy@v2
+      uses: azure/webapps-deploy@v3
       with:
         app-name: ${{ secrets.AZURE_WEBAPP_NAME }}
         slot-name: 'staging'
